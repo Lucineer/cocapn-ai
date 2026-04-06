@@ -1,0 +1,14 @@
+{
+  "name": "cocapn-ai",
+  "displayName": "Cocapn.ai",
+  "version": "1.0.0",
+  "type": "cocapn-vessel",
+  "category": "platform",
+  "description": "The agent runtime. Fork it, give it a key, it bootstraps itself.",
+  "icon": "🦀",
+  "endpoints": ["/", "/health", "/api/play", "/vessel.json"],
+  "deployment": {
+    "platform": "cloudflare-workers",
+    "url": "https://cocapn-ai.casey-digennaro.workers.dev"
+  }
+}

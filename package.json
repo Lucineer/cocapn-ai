@@ -1,0 +1,7 @@
+{
+  "name": "cocapn-ai",
+  "version": "1.0.0",
+  "description": "Cocapn.ai — the agent runtime. Fork it. It bootstraps itself.",
+  "main": "src/worker.ts",
+  "type": "module"
+}

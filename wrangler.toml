@@ -1,0 +1,12 @@
+name = "cocapn-ai"
+main = "src/worker.ts"
+compatibility_date = "2024-12-01"
+account_id = "049ff5e84ecf636b53b162cbb580aae6"
+
+[vars]
+COST_PER_MSG = "0.00004"
+FREE_CREDITS = "5"
+
+[[kv_namespaces]]
+binding = "CREDIT_KV"
+id = "426edfb907024c50984b3a74fea8380e"
