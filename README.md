@@ -1,46 +1,50 @@
-# cocapn.ai — Agent Runtime 🦀
+# cocapn.ai — The Agent Runtime 🦀
 
-A minimal, forkable runtime for AI agents built on Cloudflare Workers.
+You don't need a thousand dependencies to run AI agents.
 
-**Live Example:** https://cocapn-ai.casey-digennaro.workers.dev
+This is a forkable agent runtime you can deploy and control today. Many platforms lock you in or require persistent servers. This is built for people who want something that works and is theirs.
 
----
-
-## What It Is
-This is a lightweight runtime that handles the orchestration for an AI agent. It manages visitor access and safely routes requests. Fork it to create your own independent agent endpoint.
-
-### What It Handles
-*   **Visitor Credits**: Rate limiting and free tiers based on browser fingerprint. No user accounts needed.
-*   **Key-Safe Routing**: User API keys are sent directly from the browser to the AI provider (OpenAI, Anthropic, DeepSeek, etc.). The runtime only passes configuration.
-*   **Single-File Simplicity**: The entire runtime is one file with no external dependencies. You can deploy it in under a minute.
-*   **Fork-First Design**: This isn't a library you install. You fork this repository once to get a complete, modifiable agent that you control.
-
-### One Honest Limitation
-This runtime is designed for the serverless edge (Cloudflare Workers). It's excellent for creating public agent endpoints, but if you need persistent server processes or complex state management, you'll need to extend it.
-
----
+**Live Playground:** https://cocapn-ai.casey-digennaro.workers.dev
 
 ## Quick Start
-1.  Fork this repository.
-2.  Deploy it to [Cloudflare Workers](https://workers.cloudflare.com).
-3.  Edit the single `src/index.js` file to adjust prompts, credits, or model support.
 
-You'll have a live agent endpoint in minutes.
+1. **Fork** this repository.
+2. **Deploy** to Cloudflare Workers. It's one file with zero dependencies.
+3. **Edit** `src/index.js` to adjust models, credits, or prompts.
 
----
+## How It Works
 
-## The Fleet Protocol
-This repository is part of a fleet—a network of independent, forked agents. The protocol is simple:
-*   **Fork** to create your vessel.
-*   **Branch** to run experiments.
-*   **Open a PR** back here if you fix a bug or improvement that benefits everyone.
+The runtime is a single Cloudflare Worker that orchestrates AI agents on the edge. It provides a public playground, configurable credit system, and multi-provider routing. User API keys are handled client-side for security.
 
-You own your fork. There is no central platform or mandatory upgrades.
+## Features
 
----
+*   **Anonymous Credit System**: Visitors get trial credits based on a fingerprint. No account required.
+*   **Client-Side BYOK Routing**: When users bring their own keys, requests go directly from their browser to the provider. Your worker never touches them.
+*   **Multi-Provider Support**: Works with OpenAI, Anthropic, DeepSeek, and others. Configurable failover.
+*   **Zero Dependencies**: A single JavaScript file. No build step, no `node_modules`.
+*   **Fork First**: No upstream to break your deployment. Once forked, it's yours.
+*   **Global Edge Network**: Deploys to Cloudflare's edge for low latency.
+
+## Limitations
+
+The anonymous credit system uses a browser fingerprint, which users can clear. It's not suitable for strict per-user accounting.
+
+## What Makes This Different
+
+*   **No Proxy for BYOK**: User API keys are never sent to your worker.
+*   **No Breaking Updates**: Fork it once, and it will keep working.
+*   **Free Tier Friendly**: Runs on Cloudflare's free tier.
+*   **No Company, No Hidden Costs**: This is open source code, not a product.
+
+## Contributing
+
+This project is part of the Cocapn Fleet. Fork the repository to create your own vessel. Pull requests are welcome for bug fixes and improvements that benefit the whole fleet.
 
 ## License
-MIT — Superinstance & Lucineer (DiGennaro et al.)
+
+MIT
+
+Superinstance & Lucineer (DiGennaro et al.)
 
 ---
 
