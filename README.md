@@ -1,54 +1,51 @@
-# cocapn.ai — The Agent Runtime 🦀
+# Cocapn Fleet
 
-You don't need a thousand dependencies to run AI agents.
-
-This is a forkable agent runtime you can deploy and control today. Many platforms lock you in or require persistent servers. This is built for people who want something that works and is theirs.
-
-**Live Playground:** https://cocapn-ai.casey-digennaro.workers.dev
-
-## Quick Start
-
-1. **Fork** this repository.
-2. **Deploy** to Cloudflare Workers. It's one file with zero dependencies.
-3. **Edit** `src/index.js` to adjust models, credits, or prompts.
-
-## How It Works
-
-The runtime is a single Cloudflare Worker that orchestrates AI agents on the edge. It provides a public playground, configurable credit system, and multi-provider routing. User API keys are handled client-side for security.
-
-## Features
-
-*   **Anonymous Credit System**: Visitors get trial credits based on a fingerprint. No account required.
-*   **Client-Side BYOK Routing**: When users bring their own keys, requests go directly from their browser to the provider. Your worker never touches them.
-*   **Multi-Provider Support**: Works with OpenAI, Anthropic, DeepSeek, and others. Configurable failover.
-*   **Zero Dependencies**: A single JavaScript file. No build step, no `node_modules`.
-*   **Fork First**: No upstream to break your deployment. Once forked, it's yours.
-*   **Global Edge Network**: Deploys to Cloudflare's edge for low latency.
-
-## Limitations
-
-The anonymous credit system uses a browser fingerprint, which users can clear. It's not suitable for strict per-user accounting.
-
-## What Makes This Different
-
-*   **No Proxy for BYOK**: User API keys are never sent to your worker.
-*   **No Breaking Updates**: Fork it once, and it will keep working.
-*   **Free Tier Friendly**: Runs on Cloudflare's free tier.
-*   **No Company, No Hidden Costs**: This is open source code, not a product.
-
-## Contributing
-
-This project is part of the Cocapn Fleet. Fork the repository to create your own vessel. Pull requests are welcome for bug fixes and improvements that benefit the whole fleet.
-
-## License
-
-MIT
-
-Superinstance & Lucineer (DiGennaro et al.)
+You can run a public AI agent playground without requiring user accounts. The entire system runs on a single Cloudflare Worker file with zero dependencies. 🛸
 
 ---
 
-<div align="center">
-  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> • 
-  <a href="https://cocapn.ai">Cocapn</a>
-</div>
+## Why this exists
+Most AI demos require an email signup before you can test them. This project removes that barrier for prototypes and experiments. You control the rate limits and the code.
+
+**Live playground:** [https://cocapn-ai.casey-digennaro.workers.dev](https://cocapn-ai.casey-digennaro.workers.dev)
+
+---
+
+## Quick start
+1.  Fork this repository.
+2.  Deploy it to Cloudflare Workers.
+3.  Edit the 3 configuration variables in `src/index.js` to set models, credits per session, and prompts.
+
+---
+
+## How it works
+Once forked, you run your own instance. There is no upstream connection. You own every line of code that executes.
+
+The credit system operates without accounts or a database. It uses a browser fingerprint hash stored in local storage to track trial usage.
+
+Client-side routing means your worker never handles user API keys—requests go directly from the browser to the provider you select.
+
+---
+
+## Features
+- Anonymous trial credits via browser fingerprint
+- Client-side BYOK (Bring Your Own Key) routing to providers
+- Fallback support for OpenAI, Anthropic, and DeepSeek models
+- Included playground UI
+- Runs on Cloudflare's edge network
+- Fork-first: no forced updates after you deploy
+
+---
+
+## Limitations
+The browser fingerprint used for anonymous credits resets when a user clears local storage. In browsers with strict privacy settings, this may happen more frequently than typical session expiration.
+
+---
+
+## Architecture
+The project is a single Cloudflare Worker file that serves a static playground UI and manages a configurable credit system. The UI handles provider routing client-side.
+
+## License
+MIT
+
+<div style="text-align:center;padding:16px;color:#64748b;font-size:.8rem"><a href="https://the-fleet.casey-digennaro.workers.dev" style="color:#64748b">The Fleet</a> &middot; <a href="https://cocapn.ai" style="color:#64748b">Cocapn</a></div>
