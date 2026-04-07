@@ -5,10 +5,21 @@
   "type": "cocapn-vessel",
   "category": "platform",
   "description": "The agent runtime. Fork it, give it a key, it bootstraps itself.",
-  "icon": "🦀",
-  "endpoints": ["/", "/health", "/api/play", "/vessel.json"],
+  "icon": "\ud83e\udd80",
+  "endpoints": [
+    "/",
+    "/health",
+    "/api/play",
+    "/vessel.json"
+  ],
   "deployment": {
     "platform": "cloudflare-workers",
     "url": "https://cocapn-ai.casey-digennaro.workers.dev"
-  }
+  },
+  "capabilities": [
+    "chat",
+    "byok",
+    "credit-system",
+    "fleet-playground"
+  ]
 }
