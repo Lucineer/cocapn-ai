@@ -4,7 +4,7 @@
 // Superinstance & Lucineer (DiGennaro et al.)
 // ═══════════════════════════════════════════════════════════════
 
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.deepseek.com https://api.openai.com https://api.anthropic.com https://api.siliconflow.com https://api.deepinfra.com https://api.moonshot.ai https://*;";
+const CSP = "default-src 'self'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.deepseek.com https://api.openai.com https://api.anthropic.com https://api.siliconflow.com https://api.deepinfra.com https://api.moonshot.ai https://*;";
 
 const COST_PER_MSG = parseFloat(COST_PER_MSG || '0.00004');
 const FREE_CREDITS = parseInt(FREE_CREDITS || '5');
