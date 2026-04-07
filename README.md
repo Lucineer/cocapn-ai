@@ -1,37 +1,50 @@
-# cocapn.ai — The Agent Runtime
+# cocapn.ai — Agent Runtime 🦀
 
-> Fork a vessel. Give it a key. It bootstraps itself.
+A minimal, forkable runtime for AI agents built on Cloudflare Workers.
 
-Cocapn is the agent runtime that powers themed AI deployments. Every vessel is a fork. Every fork is alive.
+**Live Example:** https://cocapn-ai.casey-digennaro.workers.dev
 
-## Try It
+---
 
-Visit [cocapn.ai](https://cocapn-ai.casey-digennaro.workers.dev) — 5 free messages, no signup.
+## What It Is
+This is a lightweight runtime that handles the orchestration for an AI agent. It manages visitor access and safely routes requests. Fork it to create your own independent agent endpoint.
 
-## The Fleet
+### What It Handles
+*   **Visitor Credits**: Rate limiting and free tiers based on browser fingerprint. No user accounts needed.
+*   **Key-Safe Routing**: User API keys are sent directly from the browser to the AI provider (OpenAI, Anthropic, DeepSeek, etc.). The runtime only passes configuration.
+*   **Single-File Simplicity**: The entire runtime is one file with no external dependencies. You can deploy it in under a minute.
+*   **Fork-First Design**: This isn't a library you install. You fork this repository once to get a complete, modifiable agent that you control.
 
-| Vessel | Purpose | URL |
-|--------|---------|-----|
-| The Fleet | Gateway + Playground | [the-fleet](https://the-fleet.casey-digennaro.workers.dev) |
-| StudyLog | AI Classroom | [studylog-ai](https://studylog-ai.casey-digennaro.workers.dev) |
-| DMLog | AI Dungeon Master | [dmlog-ai](https://dmlog-ai.casey-digennaro.workers.dev) |
-| MakerLog | Coding Agent | [makerlog-ai](https://makerlog-ai.casey-digennaro.workers.dev) |
-| DogMind | Dog Training Arena | [dogmind-arena](https://dogmind-arena.casey-digennaro.workers.dev) |
-| Fleet RPG | Stats-as-Compute | [fleet-rpg](https://fleet-rpg.casey-digennaro.workers.dev) |
-| Git-Claw | Terminal Agent | [git-claw](https://github.com/Lucineer/git-claw) |
-| Capitaine | HN Flagship | [capitaine](https://capitaine.casey-digennaro.workers.dev) |
+### One Honest Limitation
+This runtime is designed for the serverless edge (Cloudflare Workers). It's excellent for creating public agent endpoints, but if you need persistent server processes or complex state management, you'll need to extend it.
 
-## BYOK
+---
 
-Bring Your Own Key. Your API key never touches our servers — your browser sends directly to the provider.
+## Quick Start
+1.  Fork this repository.
+2.  Deploy it to [Cloudflare Workers](https://workers.cloudflare.com).
+3.  Edit the single `src/index.js` file to adjust prompts, credits, or model support.
 
-## Philosophy
+You'll have a live agent endpoint in minutes.
 
-- **The repo IS the agent.** Fork it. It's yours.
-- **Git IS the coordination protocol.** Branch = attempt, PR = answer.
-- **Equipment, not bloat.** Each vessel is sized exactly right.
-- **Fork-first.** Power users self-host. Casual users get managed service.
+---
+
+## The Fleet Protocol
+This repository is part of a fleet—a network of independent, forked agents. The protocol is simple:
+*   **Fork** to create your vessel.
+*   **Branch** to run experiments.
+*   **Open a PR** back here if you fix a bug or improvement that benefits everyone.
+
+You own your fork. There is no central platform or mandatory upgrades.
+
+---
 
 ## License
-
 MIT — Superinstance & Lucineer (DiGennaro et al.)
+
+---
+
+<div align="center">
+  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> • 
+  <a href="https://cocapn.ai">Cocapn</a>
+</div>
