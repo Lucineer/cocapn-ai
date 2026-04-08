@@ -69,6 +69,7 @@ const VESSELS = [
   { name: 'Git Claw', desc: 'Terminal agent', url: 'https://git-claw.casey-digennaro.workers.dev', color: '#22d3ee' },
   { name: 'Fleet RPG', desc: 'Fleet adventure', url: 'https://fleet-rpg.casey-digennaro.workers.dev', color: '#ef4444' },
   { name: 'Collective Mind', desc: 'Fleet intelligence', url: 'https://collective-mind.casey-digennaro.workers.dev', color: '#c084fc' },
+  { name: 'Git-Claw', desc: 'Agent TUI', url: 'https://github.com/Lucineer/git-claw', color: '#22d3ee' },
 ];
 
 const EQUIPMENT = [
