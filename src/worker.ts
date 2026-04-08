@@ -1,444 +1,530 @@
-const HTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cocapn-ai | AI Infrastructure Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --accent: #00d4ff;
-            --bg: #0a0a0f;
-            --surface: #151520;
-            --text: #f0f0f0;
-            --text-secondary: #a0a0b0;
-            --border: #2a2a3a;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Navigation */
-        nav {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            z-index: 100;
-        }
-        
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--accent);
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 32px;
-        }
-        
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-        
-        /* Hero */
-        .hero {
-            padding: 80px 0;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--accent), #00a8ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .hero p {
-            font-size: 20px;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--bg);
-            padding: 16px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 18px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-        }
-        
-        /* Features */
-        .features {
-            padding: 80px 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 36px;
-            margin-bottom: 60px;
-            color: var(--text);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-        
-        .feature-icon {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
-        
-        .feature-card h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .feature-card p {
-            color: var(--text-secondary);
-        }
-        
-        /* Pricing */
-        .pricing {
-            padding: 80px 0;
-        }
-        
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .pricing-card {
-            background: var(--surface);
-            padding: 40px 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        .pricing-card.featured {
-            border-color: var(--accent);
-            transform: scale(1.05);
-        }
-        
-        .pricing-card h3 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        
-        .price {
-            font-size: 48px;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 30px;
-        }
-        
-        .price span {
-            font-size: 16px;
-            color: var(--text-secondary);
-        }
-        
-        .pricing-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-        
-        .pricing-features li {
-            padding: 10px 0;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        /* Footer */
-        footer {
-            padding: 60px 0;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: var(--accent);
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-            
-            .hero p {
-                font-size: 18px;
-            }
-            
-            .section-title {
-                font-size: 28px;
-            }
-            
-            .pricing-card.featured {
-                transform: none;
-            }
-            
-            .footer-links {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="container nav-content">
-            <a href="#" class="logo">cocapn-ai</a>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#">Documentation</a>
-                <a href="#">Sign In</a>
-            </div>
-        </div>
-    </nav>
-
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>AI Infrastructure for the Next Generation</h1>
-                <p>Deploy, scale, and manage AI models with unprecedented simplicity and performance. Built for developers who demand excellence.</p>
-                <a href="#pricing" class="cta-button">Start Building Today</a>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="container">
-                <h2 class="section-title">Powerful Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
-                        <h3>Lightning Fast</h3>
-                        <p>Global edge network with sub-50ms latency for AI inference worldwide.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Enterprise Security</h3>
-                        <p>End-to-end encryption and compliance with industry security standards.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Real-time Analytics</h3>
-                        <p>Comprehensive monitoring and insights into model performance and usage.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔄</div>
-                        <h3>Auto Scaling</h3>
-                        <p>Intelligent resource allocation that adapts to your traffic patterns automatically.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="pricing" class="pricing">
-            <div class="container">
-                <h2 class="section-title">Simple, Transparent Pricing</h2>
-                <div class="pricing-grid">
-                    <div class="pricing-card">
-                        <h3>Hobby</h3>
-                        <div class="price">$0<span>/month</span></div>
-                        <ul class="pricing-features">
-                            <li>10K requests/month</li>
-                            <li>1 GB storage</li>
-                            <li>Community support</li>
-                            <li>Basic analytics</li>
-                        </ul>
-                        <a href="#" class="cta-button">Get Started</a>
-                    </div>
-                    <div class="pricing-card featured">
-                        <h3>Pro</h3>
-                        <div class="price">$9<span>/month</span></div>
-                        <ul class="pricing-features">
-                            <li>100K requests/month</li>
-                            <li>10 GB storage</li>
-                            <li>Priority support</li>
-                            <li>Advanced analytics</li>
-                        </ul>
-                        <a href="#" class="cta-button">Most Popular</a>
-                    </div>
-                    <div class="pricing-card">
-                        <h3>Team</h3>
-                        <div class="price">$29<span>/month</span></div>
-                        <ul class="pricing-features">
-                            <li>1M requests/month</li>
-                            <li>100 GB storage</li>
-                            <li>24/7 support</li>
-                            <li>Custom domains</li>
-                        </ul>
-                        <a href="#" class="cta-button">For Teams</a>
-                    </div>
-                    <div class="pricing-card">
-                        <h3>Enterprise</h3>
-                        <div class="price">$99<span>/month</span></div>
-                        <ul class="pricing-features">
-                            <li>10M requests/month</li>
-                            <li>1 TB storage</li>
-                            <li>Dedicated support</li>
-                            <li>SLA guarantee</li>
-                        </ul>
-                        <a href="#" class="cta-button">Contact Sales</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Documentation</a>
-                <a href="#">Contact</a>
-                <a href="#">Twitter</a>
-                <a href="#">GitHub</a>
-            </div>
-            <p>&copy; 2024 cocapn-ai. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // Simple mobile menu toggle (optional enhancement)
-        console.log('cocapn-ai loaded successfully');
-    </script>
-</body>
-</html>
-`;
-
 export default {
-  async fetch(request) {
+  async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     
     // Health endpoint
     if (url.pathname === '/health') {
-      return new Response(
-        JSON.stringify({
-          status: 'healthy',
-          timestamp: new Date().toISOString(),
-          service: 'cocapn-ai'
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache'
-          }
-        }
-      );
+      return new Response(JSON.stringify({ status: "ok" }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    // HTML response
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cocapn.ai - Agent Runtime Platform</title>
+  <meta name="description" content="Runtime agent platform for A2A, A2UI, A2C, and MCP">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #1a1a1a;
+      --text: #f0f0f0;
+      --text-secondary: #888;
+      --accent: #00d4ff;
+      --accent-dark: #0088aa;
+      --border: #333;
+      --radius: 8px;
+      --transition: 0.2s ease;
     }
     
-    // Main landing page
-    return new Response(HTML, {
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header & Navigation */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .nav-desktop {
+      display: none;
+    }
+    
+    .nav-desktop a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 2rem;
+      transition: color var(--transition);
+    }
+    
+    .nav-desktop a:hover {
+      color: var(--accent);
+    }
+    
+    .mobile-menu-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .mobile-menu.active {
+      display: flex;
+    }
+    
+    .mobile-menu a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    /* Hero */
+    .hero {
+      padding: 4rem 0;
+      text-align: center;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    }
+    
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--accent), #00ffaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 800px;
+      margin: 0 auto 2rem;
+    }
+    
+    /* Cards */
+    .section {
+      padding: 3rem 0;
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--accent);
+    }
+    
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: transform var(--transition), border-color var(--transition);
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+    
+    .card-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+    
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .feature {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .pricing-card.featured {
+      border-color: var(--accent);
+      transform: scale(1.05);
+    }
+    
+    .price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 1rem 0;
+    }
+    
+    .price-period {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .pricing-features {
+      list-style: none;
+      margin: 1.5rem 0;
+    }
+    
+    .pricing-features li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.75rem 2rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      transition: background var(--transition);
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .cta-button:hover {
+      background: var(--accent-dark);
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      margin-top: 3rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+    
+    .copyright {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive */
+    @media (min-width: 768px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+      
+      .nav-desktop {
+        display: flex;
+      }
+      
+      .hero h1 {
+        font-size: 3.5rem;
+      }
+      
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .hero h1 {
+        font-size: 4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav-container">
+      <a href="/" class="logo">Cocapn.ai</a>
+      
+      <nav class="nav-desktop">
+        <a href="#home">Home</a>
+        <a href="#protocol">Protocol</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#docs">Docs</a>
+      </nav>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    </div>
+    
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="#home">Home</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#docs">Docs</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container">
+        <h1>The Agent Runtime</h1>
+        <p class="hero-subtitle">
+          A2A agent-to-agent communication. A2UI agent-generated interfaces. 
+          A2C agent content pipelines. MCP model context protocol. 
+          The agent IS the git repo.
+        </p>
+        <a href="#pricing" class="cta-button">Get Started</a>
+      </div>
+    </section>
+
+    <section class="section" id="protocol">
+      <div class="container">
+        <h2 class="section-title">Protocol</h2>
+        <div class="cards-grid">
+          <div class="card">
+            <h3 class="card-title">A2A (Agent to Agent)</h3>
+            <p>Agents coordinate, share knowledge, fleet orchestration</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">A2UI (Agent to UI)</h3>
+            <p>Agents generate web, mobile, and TUI interfaces dynamically</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">A2C (Agent to Content)</h3>
+            <p>Agents manage content pipelines - social media, blogs, docs</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">MCP (Model Context Protocol)</h3>
+            <p>Connect any model, any tool, any provider via standard protocol</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <h2 class="section-title">Features</h2>
+        <div class="features-grid">
+          <div class="feature">
+            <h3>Git-native agents</h3>
+            <p>Your agent lives in a git repository</p>
+          </div>
+          <div class="feature">
+            <h3>BYOK</h3>
+            <p>Bring your own keys and models</p>
+          </div>
+          <div class="feature">
+            <h3>TUI in repo</h3>
+            <p>Terminal UI included with every agent</p>
+          </div>
+          <div class="feature">
+            <h3>Hardware optional</h3>
+            <p>Works with or without dedicated hardware</p>
+          </div>
+          <div class="feature">
+            <h3>Fork-first</h3>
+            <p>Start by forking existing agents</p>
+          </div>
+          <div class="feature">
+            <h3>Zero lock-in</h3>
+            <p>Export your agent anytime</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="container">
+        <h2 class="section-title">Pricing</h2>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <h3>Free</h3>
+            <div class="price">$0</div>
+            <div class="price-period">per month</div>
+            <ul class="pricing-features">
+              <li>1 instance</li>
+              <li>Basic features</li>
+              <li>Community support</li>
+            </ul>
+            <button class="cta-button">Get Started</button>
+          </div>
+          
+          <div class="pricing-card featured">
+            <h3>Standard</h3>
+            <div class="price">$9</div>
+            <div class="price-period">per month</div>
+            <ul class="pricing-features">
+              <li>5 instances</li>
+              <li>Cloud sync</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="cta-button">Get Started</button>
+          </div>
+          
+          <div class="pricing-card">
+            <h3>Pro</h3>
+            <div class="price">$29</div>
+            <div class="price-period">per month</div>
+            <ul class="pricing-features">
+              <li>Unlimited instances</li>
+              <li>Capitaine access</li>
+              <li>Advanced features</li>
+            </ul>
+            <button class="cta-button">Get Started</button>
+          </div>
+          
+          <div class="pricing-card">
+            <h3>Enterprise</h3>
+            <div class="price">$99</div>
+            <div class="price-period">per seat / month</div>
+            <ul class="pricing-features">
+              <li>Custom deployment</li>
+              <li>Dedicated support</li>
+              <li>SLA guarantee</li>
+            </ul>
+            <button class="cta-button">Contact Sales</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://deckboss.ai">Deckboss.ai</a>
+        <a href="https://deckboss.net">Deckboss.net</a>
+        <a href="https://cocapn.ai">Cocapn.ai</a>
+        <a href="https://cocapn.com">Cocapn.com</a>
+        <a href="https://capitaine.ai">Capitaine.ai</a>
+        <a href="https://github.com/Lucineer">github.com/Lucineer</a>
+      </div>
+      <p class="copyright">© 2024 Cocapn.ai. Built for software developers and content creators.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("active");
+      });
+      
+      // Close menu when clicking a link
+      mobileMenu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.remove("active");
+        });
+      });
+    }
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener("click", function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute("href");
+        if (targetId === "#") return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: "smooth"
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>`;
+
+    return new Response(html, {
       headers: {
-        'Content-Type': 'text/html;charset=UTF-8',
-        'X-Frame-Options': 'DENY',
-        'Content-Security-Policy': "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';"
+        "Content-Type": "text/html;charset=UTF-8",
+        "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';",
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff"
       }
     });
   }
