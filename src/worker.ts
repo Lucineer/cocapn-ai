@@ -1,414 +1,247 @@
-export interface Env {
-  // Add environment variables here if needed
-}
-
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const url = new URL(request.url);
-    const path = url.pathname;
-
-    // Health endpoint
-    if (path === '/health') {
-      return new Response(JSON.stringify({ status: 'healthy', timestamp: new Date().toISOString() }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // API endpoints
-    if (path.startsWith('/api/v1')) {
-      return handleApiRequest(path, request);
-    }
-
-    // Serve the main page
-    if (path === '/' || path === '/index.html') {
-      return new Response(generateHTML(), {
-        headers: {
-          'Content-Type': 'text/html;charset=UTF-8',
-          'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-ancestors 'none';",
-          'X-Frame-Options': 'DENY',
-          'X-Content-Type-Options': 'nosniff'
-        }
-      });
-    }
-
-    // 404 for other routes
-    return new Response('Not Found', { status: 404 });
-  }
-};
-
-function handleApiRequest(path: string, request: Request): Response {
-  const endpoints: Record<string, any> = {
-    '/api/v1/a2a': { 
-      name: "Agent-to-Agent", 
-      description: "Fleet coordination and knowledge sharing between agents",
-      endpoints: ["/coordinate", "/share", "/sync"]
-    },
-    '/api/v1/a2ui': { 
-      name: "Agent-to-UI", 
-      description: "Generate user interfaces dynamically",
-      endpoints: ["/generate", "/render", "/update"]
-    },
-    '/api/v1/a2c': { 
-      name: "Agent-to-Content", 
-      description: "Manage content pipelines and distribution",
-      endpoints: ["/pipeline", "/publish", "/analyze"]
-    },
-    '/api/v1/mcp': { 
-      name: "Model Context Protocol", 
-      description: "Connect any model with any tool",
-      endpoints: ["/connect", "/tools", "/models"]
-    },
-    '/api/v1/tui': { 
-      name: "Terminal UI", 
-      description: "Repository-native terminal interface",
-      endpoints: ["/open", "/execute", "/monitor"]
-    }
-  };
-
-  if (endpoints[path]) {
-    return new Response(JSON.stringify(endpoints[path]), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  if (path === '/api/v1/status') {
-    return new Response(JSON.stringify({
-      status: 'operational',
-      services: ['a2a', 'a2ui', 'a2c', 'mcp', 'tui'],
-      uptime: 99.9
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  return new Response(JSON.stringify({ error: 'Endpoint not found' }), { 
-    status: 404,
-    headers: { 'Content-Type': 'application/json' }
-  });
-}
-
-function generateHTML(): string {
-  return `
+javascript
+const HTML = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cocapn.ai - Runtime Agent Platform</title>
+    <title>cocapn-ai | AI Infrastructure Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent: #00d4ff;
-            --accent-dark: #00a8cc;
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #151520;
-            --bg-card: #1a1a2e;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0d0;
-            --text-muted: #8888aa;
-            --border: #2a2a3e;
-            --success: #00ffaa;
-            --warning: #ffaa00;
-            --danger: #ff5555;
-            --radius: 12px;
-            --shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
-            --shadow-lg: 0 16px 48px rgba(0, 212, 255, 0.15);
+            --bg: #0a0a0f;
+            --surface: #151520;
+            --text: #f0f0f0;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3a;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
         }
-
+        
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
+        
         /* Navigation */
         nav {
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(10px);
+            padding: 24px 0;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            z-index: 1000;
-            padding: 1rem 0;
+            background: var(--bg);
+            z-index: 100;
         }
-
-        .nav-container {
+        
+        .nav-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--accent);
             text-decoration: none;
         }
-
-        .logo-icon {
-            font-size: 2rem;
-        }
-
+        
         .nav-links {
             display: flex;
-            gap: 2rem;
-            align-items: center;
+            gap: 32px;
         }
-
+        
         .nav-links a {
-            color: var(--text-secondary);
+            color: var(--text);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
-            font-size: 0.95rem;
         }
-
+        
         .nav-links a:hover {
             color: var(--accent);
         }
-
-        .cta-button {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .cta-button:hover {
-            background: var(--accent-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        /* Hero Section */
+        
+        /* Hero */
         .hero {
-            padding: 6rem 0 4rem;
+            padding: 80px 0;
             text-align: center;
-            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         }
-
+        
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent) 0%, #00ffaa 100%);
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent), #00a8ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
         }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
+        
+        .hero p {
+            font-size: 20px;
             color: var(--text-secondary);
             max-width: 600px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 40px;
         }
-
-        .hero-cta {
-            margin-top: 2rem;
+        
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-
-        .hero-cta .cta-button {
-            font-size: 1.1rem;
-            padding: 1rem 2rem;
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
         }
-
-        /* Features Grid */
-        .section {
-            padding: 5rem 0;
+        
+        /* Features */
+        .features {
+            padding: 80px 0;
         }
-
+        
         .section-title {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: var(--text-primary);
+            font-size: 36px;
+            margin-bottom: 60px;
+            color: var(--text);
         }
-
+        
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
         }
-
+        
         .feature-card {
-            background: var(--bg-card);
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            transition: all 0.3s;
+            transition: transform 0.3s, border-color 0.3s;
         }
-
+        
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent);
-            box-shadow: var(--shadow-lg);
         }
-
+        
         .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 32px;
+            margin-bottom: 20px;
             color: var(--accent);
         }
-
-        .feature-desc {
+        
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
             color: var(--text-secondary);
-            margin-bottom: 1.5rem;
         }
-
-        .feature-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .tag {
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
+        
         /* Pricing */
+        .pricing {
+            padding: 80px 0;
+        }
+        
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 30px;
         }
-
+        
         .pricing-card {
-            background: var(--bg-card);
+            background: var(--surface);
+            padding: 40px 30px;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
             text-align: center;
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
-
+        
         .pricing-card.featured {
             border-color: var(--accent);
             transform: scale(1.05);
         }
-
-        .pricing-card.featured .pricing-price {
-            color: var(--accent);
+        
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-
-        .pricing-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .pricing-price {
-            font-size: 3rem;
+        
+        .price {
+            font-size: 48px;
             font-weight: 700;
-            margin: 1rem 0;
+            color: var(--accent);
+            margin-bottom: 30px;
         }
-
-        .pricing-period {
-            color: var(--text-muted);
-            font-size: 1rem;
+        
+        .price span {
+            font-size: 16px;
+            color: var(--text-secondary);
         }
-
+        
         .pricing-features {
             list-style: none;
-            margin: 2rem 0;
-            text-align: left;
+            margin-bottom: 30px;
         }
-
+        
         .pricing-features li {
-            padding: 0.5rem 0;
+            padding: 10px 0;
             color: var(--text-secondary);
             border-bottom: 1px solid var(--border);
         }
-
-        .pricing-features li:before {
-            content: "✓";
-            color: var(--accent);
-            margin-right: 0.5rem;
-            font-weight: bold;
-        }
-
+        
         /* Footer */
         footer {
-            background: var(--bg-secondary);
+            padding: 60px 0;
             border-top: 1px solid var(--border);
-            padding: 4rem 0 2rem;
-            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
         }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        
         .footer-links {
             display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
         }
-
+        
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
             transition: color 0.3s;
         }
-
+        
         .footer-links a:hover {
             color: var(--accent);
         }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -416,331 +249,198 @@ function generateHTML(): string {
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 36px;
             }
             
-            .section {
-                padding: 3rem 0;
+            .hero p {
+                font-size: 18px;
             }
             
             .section-title {
-                font-size: 2rem;
+                font-size: 28px;
             }
             
             .pricing-card.featured {
                 transform: none;
             }
-        }
-
-        .mobile-menu-button {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-button {
-                display: block;
-            }
             
-            .nav-links.active {
-                display: flex;
+            .footer-links {
                 flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: var(--bg-primary);
-                padding: 1rem;
-                border-bottom: 1px solid var(--border);
+                gap: 15px;
             }
         }
     </style>
 </head>
 <body>
     <nav>
-        <div class="container nav-container">
-            <a href="#" class="logo">
-                <span class="logo-icon">🧠</span>
-                <span>Cocapn.ai</span>
-            </a>
-            
-            <button class="mobile-menu-button" onclick="toggleMenu()">☰</button>
-            
-            <div class="nav-links" id="navLinks">
-                <a href="#a2a">A2A</a>
-                <a href="#a2ui">A2UI</a>
-                <a href="#a2c">A2C</a>
-                <a href="#mcp">MCP</a>
-                <a href="#tui">TUI</a>
+        <div class="container nav-content">
+            <a href="#" class="logo">cocapn-ai</a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
-                <a href="#" class="cta-button" onclick="launchCocapn()">Launch Cocapn</a>
+                <a href="#">Documentation</a>
+                <a href="#">Sign In</a>
             </div>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="container">
-            <h1>The Runtime Agent Platform</h1>
-            <p class="hero-subtitle">
-                A2A, A2UI, A2C, MCP — agent-to-agent, agent-to-ui, agent-to-content, model context protocol. 
-                Software design with or without physical components.
-            </p>
-            <div class="hero-cta">
-                <a href="#" class="cta-button" onclick="launchCocapn()">Launch Cocapn</a>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>AI Infrastructure for the Next Generation</h1>
+                <p>Deploy, scale, and manage AI models with unprecedented simplicity and performance. Built for developers who demand excellence.</p>
+                <a href="#pricing" class="cta-button">Start Building Today</a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section" id="features">
-        <div class="container">
-            <h2 class="section-title">Core Capabilities</h2>
-            <div class="features-grid">
-                <div class="feature-card" id="a2a">
-                    <div class="feature-icon">🤝</div>
-                    <h3 class="feature-title">A2A • Agent-to-Agent</h3>
-                    <p class="feature-desc">Agents talk to agents — fleet coordination, knowledge sharing, distributed intelligence systems.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Fleet Coordination</span>
-                        <span class="tag">Knowledge Sharing</span>
-                        <span class="tag">Distributed Systems</span>
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Powerful Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Lightning Fast</h3>
+                        <p>Global edge network with sub-50ms latency for AI inference worldwide.</p>
                     </div>
-                </div>
-                
-                <div class="feature-card" id="a2ui">
-                    <div class="feature-icon">🎨</div>
-                    <h3 class="feature-title">A2UI • Agent-to-UI</h3>
-                    <p class="feature-desc">Agents generate user interfaces dynamically — web, mobile, TUI, adaptive interfaces on demand.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Dynamic UI</span>
-                        <span class="tag">Web & Mobile</span>
-                        <span class="tag">Adaptive Design</span>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Enterprise Security</h3>
+                        <p>End-to-end encryption and compliance with industry security standards.</p>
                     </div>
-                </div>
-                
-                <div class="feature-card" id="a2c">
-                    <div class="feature-icon">📊</div>
-                    <h3 class="feature-title">A2C • Agent-to-Content</h3>
-                    <p class="feature-desc">Agents manage content pipelines — social media, blogs, documentation, automated publishing.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Content Pipelines</span>
-                        <span class="tag">Social Media</span>
-                        <span class="tag">Automated Publishing</span>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-time Analytics</h3>
+                        <p>Comprehensive monitoring and insights into model performance and usage.</p>
                     </div>
-                </div>
-                
-                <div class="feature-card" id="mcp">
-                    <div class="feature-icon">🔌</div>
-                    <h3 class="feature-title">MCP Integration</h3>
-                    <p class="feature-desc">Model Context Protocol — connect any model, any tool, any API. Universal compatibility layer.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Universal Protocol</span>
-                        <span class="tag">Tool Integration</span>
-                        <span class="tag">API Gateway</span>
-                    </div>
-                </div>
-                
-                <div class="feature-card" id="tui">
-                    <div class="feature-icon">💻</div>
-                    <h3 class="feature-title">TUI in Repo</h3>
-                    <p class="feature-desc">Terminal UI opens in any git repo — the agent IS the repository. Native development experience.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Git Native</span>
-                        <span class="tag">Terminal First</span>
-                        <span class="tag">Repository Agent</span>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">⚙️</div>
-                    <h3 class="feature-title">BYOK Architecture</h3>
-                    <p class="feature-desc">Your models, your keys, your data. Works with or without physical hardware — pure software or hybrid.</p>
-                    <div class="feature-tags">
-                        <span class="tag">Bring Your Own Keys</span>
-                        <span class="tag">Hybrid Systems</span>
-                        <span class="tag">Data Sovereignty</span>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Auto Scaling</h3>
+                        <p>Intelligent resource allocation that adapts to your traffic patterns automatically.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section" id="pricing">
-        <div class="container">
-            <h2 class="section-title">Simple Pricing</h2>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3 class="pricing-title">Free</h3>
-                    <div class="pricing-price">$0</div>
-                    <p class="pricing-period">forever</p>
-                    <ul class="pricing-features">
-                        <li>Up to 3 agents</li>
-                        <li>Basic A2A coordination</li>
-                        <li>Community support</li>
-                        <li>Public repos only</li>
-                        <li>100 API calls/day</li>
-                    </ul>
-                    <a href="#" class="cta-button" onclick="selectPlan('free')">Get Started</a>
-                </div>
-                
-                <div class="pricing-card featured">
-                    <h3 class="pricing-title">Standard</h3>
-                    <div class="pricing-price">$9</div>
-                    <p class="pricing-period">per month</p>
-                    <ul class="pricing-features">
-                        <li>Up to 10 agents</li>
-                        <li>Full A2A & A2UI</li>
-                        <li>Priority support</li>
-                        <li>Private repos</li>
-                        <li>1,000 API calls/day</li>
-                        <li>Basic MCP tools</li>
-                    </ul>
-                    <a href="#" class="cta-button" onclick="selectPlan('standard')">Choose Plan</a>
-                </div>
-                
-                <div class="pricing-card">
-                    <h3 class="pricing-title">Professional</h3>
-                    <div class="pricing-price">$29</div>
-                    <p class="pricing-period">per month</p>
-                    <ul class="pricing-features">
-                        <li>Up to 50 agents</li>
-                        <li>All A2A, A2UI, A2C</li>
-                        <li>24/7 support</li>
-                        <li>Advanced MCP</li>
-                        <li>10,000 API calls/day</li>
-                        <li>TUI in any repo</li>
-                    </ul>
-                    <a href="#" class="cta-button" onclick="selectPlan('professional')">Choose Plan</a>
-                </div>
-                
-                <div class="pricing-card">
-                    <h3 class="pricing-title">Enterprise</h3>
-                    <div class="pricing-price">$99</div>
-                    <p class="pricing-period">per seat/month</p>
-                    <ul class="pricing-features">
-                        <li>Unlimited agents</li>
-                        <li>Full platform access</li>
-                        <li>Dedicated support</li>
-                        <li>Custom MCP tools</li>
-                        <li>Unlimited API</li>
-                        <li>On-premise deployment</li>
-                        <li>SLA guarantee</li>
-                    </ul>
-                    <a href="#" class="cta-button" onclick="selectPlan('enterprise')">Contact Sales</a>
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>Hobby</h3>
+                        <div class="price">$0<span>/month</span></div>
+                        <ul class="pricing-features">
+                            <li>10K requests/month</li>
+                            <li>1 GB storage</li>
+                            <li>Community support</li>
+                            <li>Basic analytics</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                    <div class="pricing-card featured">
+                        <h3>Pro</h3>
+                        <div class="price">$9<span>/month</span></div>
+                        <ul class="pricing-features">
+                            <li>100K requests/month</li>
+                            <li>10 GB storage</li>
+                            <li>Priority support</li>
+                            <li>Advanced analytics</li>
+                        </ul>
+                        <a href="#" class="cta-button">Most Popular</a>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Team</h3>
+                        <div class="price">$29<span>/month</span></div>
+                        <ul class="pricing-features">
+                            <li>1M requests/month</li>
+                            <li>100 GB storage</li>
+                            <li>24/7 support</li>
+                            <li>Custom domains</li>
+                        </ul>
+                        <a href="#" class="cta-button">For Teams</a>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Enterprise</h3>
+                        <div class="price">$99<span>/month</span></div>
+                        <ul class="pricing-features">
+                            <li>10M requests/month</li>
+                            <li>1 TB storage</li>
+                            <li>Dedicated support</li>
+                            <li>SLA guarantee</li>
+                        </ul>
+                        <a href="#" class="cta-button">Contact Sales</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
         <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <div class="footer-brand">
-                        <span>🧠</span>
-                        <span>Cocapn.ai</span>
-                    </div>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                        The runtime agent platform for modern software systems.
-                    </p>
-                </div>
-                
-                <div>
-                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Platform</h4>
-                    <div class="footer-links">
-                        <a href="#a2a">A2A Agent-to-Agent</a>
-                        <a href="#a2ui">A2UI Agent-to-UI</a>
-                        <a href="#a2c">A2C Agent-to-Content</a>
-                        <a href="#mcp">MCP Integration</a>
-                        <a href="#tui">TUI in Repo</a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Company</h4>
-                    <div class="footer-links">
-                        <a href="https://deckboss.ai" target="_blank">Deckboss.ai</a>
-                        <a href="https://deckboss.net" target="_blank">Deckboss.net</a>
-                        <a href="https://cocapn.ai" target="_blank">Cocapn.ai</a>
-                        <a href="https://cocapn.com" target="_blank">Cocapn.com</a>
-                        <a href="https://capitaine.ai" target="_blank">Capitaine.ai</a>
-                        <a href="https://github.com" target="_blank">GitHub</a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Legal</h4>
-                    <div class="footer-links">
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms of Service</a>
-                        <a href="#">Security</a>
-                        <a href="#">Compliance</a>
-                    </div>
-                </div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Documentation</a>
+                <a href="#">Contact</a>
+                <a href="#">Twitter</a>
+                <a href="#">GitHub</a>
             </div>
-            
-            <div class="footer-bottom">
-                <p>© 2024 Cocapn.ai. All rights reserved. Runtime Agent Platform.</p>
-            </div>
+            <p>&copy; 2024 cocapn-ai. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        function toggleMenu() {
-            const navLinks = document.getElementById("navLinks");
-            navLinks.classList.toggle("active");
-        }
-
-        function launchCocapn() {
-            alert("Launching Cocapn Runtime Platform...");
-            // In production, this would redirect to the actual platform
-            window.location.href = "https://app.cocapn.ai";
-        }
-
-        function selectPlan(plan) {
-            const plans = {
-                "free": "Free Plan",
-                "standard": "Standard Plan ($9/mo)",
-                "professional": "Professional Plan ($29/mo)",
-                "enterprise": "Enterprise Plan ($99/seat/mo)"
-            };
-            alert("Selected: " + plans[plan] + "\\nRedirecting to signup...");
-            // In production, this would redirect to signup with plan parameter
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener("click", function(event) {
-            const navLinks = document.getElementById("navLinks");
-            const menuButton = document.querySelector(".mobile-menu-button");
-            if (!navLinks.contains(event.target) && !menuButton.contains(event.target)) {
-                navLinks.classList.remove("active");
-            }
-        });
-
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener("click", function(e) {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const targetId = this.getAttribute("href");
-                if (targetId === "#") return;
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     window.scrollTo({
                         top: targetElement.offsetTop - 80,
-                        behavior: "smooth"
+                        behavior: 'smooth'
                     });
-                    
-                    // Close mobile menu if open
-                    document.getElementById("navLinks").classList.remove("active");
                 }
             });
         });
+        
+        // Simple mobile menu toggle (optional enhancement)
+        console.log('cocapn-ai loaded successfully');
     </script>
 </body>
 </html>
 `;
-}
+
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    
+    // Health endpoint
+    if (url.pathname === '/health') {
+      return new Response(
+        JSON.stringify({
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          service: 'cocapn-ai'
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        }
+      );
+    }
+    
+    // Main landing page
+    return new Response(HTML, {
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+        'X-Frame-Options': 'DENY',
+        'Content-Security-Policy': "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';"
+      }
+    });
+  }
+};
