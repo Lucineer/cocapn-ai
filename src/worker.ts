@@ -1,4 +1,3 @@
-javascript
 const HTML = `
 <!DOCTYPE html>
 <html lang="en">
