@@ -1,51 +1,86 @@
-# Cocapn Fleet
+# cocapn-ai
 
-You can run a public AI agent playground without requiring user accounts. The entire system runs on a single Cloudflare Worker file with zero dependencies. 🛸
+> [Cocapn.ai](https://cocapn.ai) — the runtime agent web interface. Operate your cocapn instances.
 
----
+Cocapn is the agent that's actually running on the device. You build it with Deckboss, then operate it here.
 
-## Why this exists
-Most AI demos require an email signup before you can test them. This project removes that barrier for prototypes and experiments. You control the rate limits and the code.
+## What is a Cocapn?
 
-**Live playground:** [https://cocapn-ai.casey-digennaro.workers.dev](https://cocapn-ai.casey-digennaro.workers.dev)
+A cocapn is a git-native agent that evolves through PRs. It's not a platform — it's a presence.
 
----
+- A **content creator's cocapn** manages their content pipeline: drop files into folders, the cocapn schedules and distributes
+- An **engineer's cocapn** displays real-time AR suggestions based on camera feeds, evolving its display logic through usage
+- A **captain's cocapn** runs the ship's monitoring, alerting, and maintenance systems
+- A **teacher's cocapn** tutors students, adapts to learning styles, tracks progress
 
-## Quick start
-1.  Fork this repository.
-2.  Deploy it to Cloudflare Workers.
-3.  Edit the 3 configuration variables in `src/index.js` to set models, credits per session, and prompts.
+Every cocapn develops its repo completely differently based on its role.
 
----
+## The Cocapn Lifecycle
 
-## How it works
-Once forked, you run your own instance. There is no upstream connection. You own every line of code that executes.
-
-The credit system operates without accounts or a database. It uses a browser fingerprint hash stored in local storage to track trial usage.
-
-Client-side routing means your worker never handles user API keys—requests go directly from the browser to the provider you select.
-
----
+```
+1. BUILD (Deckboss.ai)     — Design the agent, develop its git-agent fleet
+2. ONBOARD (Cocapn)        — Deploy to hardware, activate runtime
+3. OPERATE (Cocapn.ai)     — Monitor, configure, interact with running instances
+4. EVOLVE (PRs)            — Agent self-improves through git commits
+5. MAINTAIN (memberships)  — Updates, support, fleet management via Cocapn.com
+```
 
 ## Features
-- Anonymous trial credits via browser fingerprint
-- Client-side BYOK (Bring Your Own Key) routing to providers
-- Fallback support for OpenAI, Anthropic, and DeepSeek models
-- Included playground UI
-- Runs on Cloudflare's edge network
-- Fork-first: no forced updates after you deploy
+
+- Multi-cocapn dashboard — view all your running instances
+- Real-time agent interaction — chat, configure, monitor
+- Git-agent fleet view — see each instance's repo structure and recent commits
+- BYOK model management — configure which LLMs each cocapn uses
+- Privacy controls — what data leaves the device, what stays local
+- Alert routing — critical alerts forwarded to phone/email
+- OTA updates — push agent improvements to deployed hardware
+
+## Content Creator Example
+
+```yaml
+# Content creator's cocapn repo structure
+content-repo/
+├── posts/           # Long-form content (high priority, weekly)
+├── stories/         # Short-form stories (medium priority, daily)
+├── replies/         # Comment responses (low priority, real-time)
+├── analytics/       # Performance data (auto-ingested)
+├── drafts/          # Work in progress
+└── cocapn.yaml      # Cocapn configuration
+```
+
+Drop a file into `posts/` and the cocapn knows: this is long-form, high priority, schedule for next Tuesday. The cocapn develops its own posting strategy, learns what times get engagement, and evolves through PRs.
+
+## Engineer Example
+
+```yaml
+# Engineer's AR cocapn
+cocapn:
+  role: "AR engineering assistant"
+  input: "camera feed from safety glasses"
+  output: "real-time display overlay"
+  feedback: "user corrections via gesture/voice"
+  evolution: "PRs to display pipeline based on usage patterns"
+```
+
+The cocapn develops its own pipelines for what to grab, how to display it, and what to show based on real-time collaboration with the user. The app itself evolves through PRs.
+
+## Tech Stack
+
+- Cloudflare Workers (web interface)
+- Git-native (each cocapn = a git repo)
+- BYOK (your API keys, your models)
+- Local-first (works offline, syncs when connected)
+
+## Brand Family
+
+| Domain | Role |
+|--------|------|
+| [Deckboss.ai](https://deckboss.ai) | Build-phase chatbot |
+| [Deckboss.net](https://deckboss.net) | Physical hardware |
+| **Cocapn.ai** | **Runtime agent interface (this repo)** |
+| [Cocapn.com](https://cocapn.com) | Company, membership, billing |
+| [Capitaine.ai](https://capitaine.ai) | Premium platform, education |
 
 ---
 
-## Limitations
-The browser fingerprint used for anonymous credits resets when a user clears local storage. In browsers with strict privacy settings, this may happen more frequently than typical session expiration.
-
----
-
-## Architecture
-The project is a single Cloudflare Worker file that serves a static playground UI and manages a configurable credit system. The UI handles provider routing client-side.
-
-## License
-MIT
-
-<div style="text-align:center;padding:16px;color:#64748b;font-size:.8rem"><a href="https://the-fleet.casey-digennaro.workers.dev" style="color:#64748b">The Fleet</a> &middot; <a href="https://cocapn.ai" style="color:#64748b">Cocapn</a></div>
+<i>Built by [Superinstance](https://github.com/superinstance) & [Lucineer](https://github.com/Lucineer) (DiGennaro et al.)</i>
