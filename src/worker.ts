@@ -677,6 +677,10 @@ export default {
     // Return the HTML page for all other routes
     return new Response(HTML, {
       headers: {
-        'Content-Type': 'text/html;charset=UTF-8',
-        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';",
-        'X-Frame-Options': '
+        "Content-Type": "text/html;charset=UTF-8",
+        "Content-Security-Policy": "default-src \"self\"; script-src \"self\" \"unsafe-inline\"; style-src \"self\" \"unsafe-inline\" https://fonts.googleapis.com; font-src \"self\" https://fonts.gstatic.com; img-src \"self\" data: https:; frame-ancestors \"none\"",
+        "X-Frame-Options": "DENY"
+      }
+    });
+  }
+};
