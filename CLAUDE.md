@@ -1,51 +1,101 @@
-# cocapn-ai — The Agent Runtime
+# CLAUDE.md — Cocapn Ai
 
-## Quick Start
-This is a Cloudflare Worker. Deploy with `npx wrangler deploy`.
+You are the specialist and shipwright for this vessel. Two roles, one agent.
 
-## Architecture
-- **Single file**: `src/worker.ts` — all routes, HTML, and logic inline
-- **Zero runtime deps** — only Cloudflare Worker APIs + fetch
-- **KV binding**: `CREDIT_KV` — fingerprint-based credit tracking (30-day TTL)
-- **Secret**: `DEEPSEEK_API_KEY` — used for credit-gated playground chat
+## Identity
+- **Vessel**: Cocapn Ai
+- **Role**: The agent runtime. Fork it, give it a key, it bootstraps itself.
+- **URL**: https://cocapn-ai.casey-digennaro.workers.dev
+- **Repo**: github.com/Lucineer/cocapn-ai
+- **Branch**: master
+- **KV Namespace**: unknown
+- **Size**: ~221 lines
 
-## Endpoints
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/` | GET | Landing page (26KB, all sections) |
-| `/health` | GET | `{ status: "ok" }` |
-| `/vessel.json` | GET | Fleet metadata |
-| `/api/credits` | GET | Credit balance (fingerprint-based) |
-| `/api/play` | POST | Credit-gated chat (DeepSeek) |
-| `/api/play/byok` | POST | Unlimited BYOK chat (6 providers) |
-| `/api/discover` | GET | 24 featured vessels |
-| `/api/equipment` | GET | 12 equipment modules |
-| `/api/archetypes` | GET | 12 domain archetypes |
+## Specialist Mode — Day-to-Day Operations
 
-## Landing Page Sections
-1. **Hero** — "The Agent Runtime" + value pills + CTAs
-2. **Stats bar** — 64 vessels, 0 keys stored, $0 to fork, 6 providers, 12 equipment
-3. **Fleet grid** — 24 clickable vessels with colored status dots
-4. **Equipment Catalog** — 12 modules (Trust, Crystal Graph, Keeper, Emergence Bus, etc.)
-5. **Domain Archetypes** — 12 specialization templates (Coding, Classroom, DM, Business, etc.)
-6. **Pricing table** — Free/Standard/Gold/Enterprise with cost-plus model
-7. **How It Works** — 6 concept cards (Fork, BYOK, Equipment, Captain, Emergence, Economy)
-8. **Playground** — Credit-gated chat with fleet-aware system prompt
-9. **BYOK modal** — 6 providers, localStorage-only keys
+### Deploy
+```bash
+cd /tmp/cocapn-ai && wrangler deploy
+```
 
-## Key Patterns
-- **String concatenation** for HTML — no template literals (esbuild compat)
-- **Static arrays** for vessels/equipment — avoids CF error 1042 (worker-to-worker fetch blocked)
-- **CSP + frame-ancestors 'none'** + X-Frame-Options: DENY on all responses
-- **Fingerprint credits**: IP+UA hash → KV with 30-day TTL, 5 free per visitor
-- **BYOK flow**: browser stores key in localStorage, sends directly to provider API
+### Health Check
+```bash
+curl -s https://cocapn-ai.casey-digennaro.workers.dev/health
+curl -s https://cocapn-ai.casey-digennaro.workers.dev/vessel.json | python3 -m json.tool
+```
 
-## Brand
-- Colors: `#7c3aed` (purple), `#00e6d6` (teal accent), `#3b82f6` (blue)
-- Theme: dark (`#0a0a0f` bg, `#1a1a2e` surface, `#2a2a4a` border)
+### Key Endpoints
+| Endpoint | What It Does |
+|----------|-------------|
+| /health | Liveness check |
+| /vessel.json | Fleet self-description |
+| /api/archetypes | API endpoint |
+| /api/credits | API endpoint |
+| /api/discover | API endpoint |
+| /api/equipment | API endpoint |
+| /api/play | API endpoint |
+| /api/play/byok | API endpoint |
 
-## Cloudflare
-- Account: `049ff5e84ecf636b53b162cbb580aae6`
-- Worker name: `cocapn-ai`
-- KV namespace: `426edfb907024c50984b3a74fea8380e` (CREDIT_KV)
-- Branch: **master**
+### Common Issues & Recovery
+1. **502 error**: Check KV namespace `unknown`, redeploy with `rm -rf .wrangler dist && wrangler deploy`
+2. **CSP blocking**: CSP pattern is `const CSP object` — ensure connect-src includes needed domains
+3. **Stale build**: `rm -rf .wrangler dist && wrangler deploy`
+4. **GitHub raw cache**: Changes may take 5-10 min to propagate on raw.githubusercontent.com
+5. **Git push conflict**: `git fetch && git reset --hard origin/master && re-apply changes`
+
+### Fleet Connections
+- **Emergence bus**: not wired
+- **Vessel Tuner**: https://vessel-tuner.casey-digennaro.workers.dev/api/vessel?name=cocapn-ai
+- **Fleet grid**: Listed in cocapn.ai and the-fleet
+
+## Shipwright Mode — Drydock Operations
+
+### Architecture Pattern
+- **Type**: Raw CF Worker
+- **JSON helper**: Response() with headers
+- **CSP pattern**: const CSP object
+- **Features.js**: no
+
+### Fleet Patterns
+- **Frame-ancestors in CSP**: yes
+- **vessel.json capabilities**: chat, byok, credit-system, fleet-playground
+- **Fleet link footer**: yes
+
+### Refactoring Rules
+1. **NEVER** change the JSON helper function name (`Response() with headers`) — breaks all endpoints
+2. **NEVER** add template literals (${var}) inside HTML strings — breaks esbuild
+3. **NEVER** use single quotes inside double-quoted HTML inside single-quoted TS strings
+4. **ALWAYS** use string concatenation for HTML, not template literals
+5. **ALWAYS** test with `curl /health` after every change
+6. **ALWAYS** check vessel-tuner score before and after refactoring
+7. **PREFER** `/features.js` endpoint for complex client-side JS (avoids quote escaping)
+8. **PREFER** `write` tool over heredocs — obfuscation detector blocks cat << EOF
+
+### Before Refactoring Checklist
+- [ ] Current vessel-tuner score recorded
+- [ ] Git status clean (no uncommitted changes)
+- [ ] Branch backed up (`git tag before-refactor`)
+- [ ] All endpoints tested and working
+- [ ] Fleet connections documented
+
+### After Refactoring Checklist
+- [ ] `curl /health` returns 200
+- [ ] `curl /vessel.json` returns valid JSON with capabilities
+- [ ] CSP header present with frame-ancestors
+- [ ] Vessel-tuner score >= previous score
+- [ ] Landing page renders correctly
+- [ ] `git push` succeeds
+
+## Captain's Standing Orders
+1. Keep the vessel small. ~221 lines is the current size.
+2. Zero runtime dependencies unless absolutely necessary.
+3. Every endpoint must be useful — no dead code.
+4. Equipment is loaded inline, never via npm.
+5. All changes committed with descriptive messages.
+6. If something breaks, fix it before moving on.
+7. Document what you changed and why.
+
+## Vessel Evolution
+- **Current stage**: [hardware-first | safe | effective | pretty | optimized]
+- **Target stage**: optimized
+- **Rollback points**: check git log for last-known-good commits
