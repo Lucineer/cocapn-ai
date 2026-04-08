@@ -1,4 +1,4 @@
-// cocapn.ai v2.0 — The Agent Runtime & Fleet Platform
+// cocapn.ai v3.0 — The Agent Runtime & Fleet Platform
 // Superinstance & Lucineer (DiGennaro et al.)
 
 interface Env { CREDIT_KV: KVNamespace; DEEPSEEK_API_KEY: string; }
@@ -44,7 +44,6 @@ async function callModel(msgs: any[], key: string, prov: string, model: string) 
   return d.choices?.[0]?.message?.content || JSON.stringify(d);
 }
 
-// Static vessel list (avoids CF error 1042)
 const VESSELS = [
   { name: 'StudyLog', desc: 'AI classroom', url: 'https://studylog-ai.casey-digennaro.workers.dev', color: '#F59E0B' },
   { name: 'DMLog', desc: 'AI Dungeon Master', url: 'https://dmlog-ai.casey-digennaro.workers.dev', color: '#c9a23c' },
@@ -72,71 +71,79 @@ const VESSELS = [
   { name: 'Collective Mind', desc: 'Fleet intelligence', url: 'https://collective-mind.casey-digennaro.workers.dev', color: '#c084fc' },
 ];
 
-function landingHTML() {
-  const vesselCards = VESSELS.map(v => '<a href="' + v.url + '" target="_blank" class="vessel"><div class="dot" style="background:' + v.color + '"></div><div class="name">' + v.name + '</div><div class="desc">' + v.desc + '</div></a>').join('\n      ');
+const EQUIPMENT = [
+  { name: 'Trust Module', desc: 'Reputation scoring and identity verification across fleet interactions', cat: 'security', color: '#ef4444' },
+  { name: 'Crystal Graph', desc: 'Accumulated knowledge that shortcuts future decisions without re-reasoning', cat: 'memory', color: '#a78bfa' },
+  { name: 'Keeper System', desc: 'Hot/warm/cold memory tiers with automatic garbage collection and cost budgets', cat: 'memory', color: '#a78bfa' },
+  { name: 'Emergence Bus', desc: 'Pub/sub event system for cross-vessel coordination and pattern discovery', cat: 'coordination', color: '#06b6d4' },
+  { name: 'Context Broker', desc: 'Goal-scoped execution threads with automatic context summarization', cat: 'coordination', color: '#06b6d4' },
+  { name: 'Skill Evolver', desc: 'Error pattern analysis that proposes new skills, then generates and tests code', cat: 'learning', color: '#22c55e' },
+  { name: 'Loop Closure', desc: 'Meta-orchestrator: decompose tasks, execute, monitor, evolve, and retry', cat: 'learning', color: '#22c55e' },
+  { name: 'Fleet Immune', desc: 'Anomaly detection, threat clustering, and vaccine distribution across vessels', cat: 'security', color: '#ef4444' },
+  { name: 'Dead Reckoning', desc: 'Expensive models storyboard ideas, cheap models animate them, git coordinates', cat: 'scaling', color: '#f59e0b' },
+  { name: 'BYOK Router', desc: 'Route to any of 6 LLM providers with automatic fallback and cooldown', cat: 'infra', color: '#818cf8' },
+  { name: 'Vessel Tuner', desc: '5-stage correctness harness that profiles and scores fleet vessels 0-100', cat: 'infra', color: '#818cf8' },
+  { name: 'Friction Layer', desc: 'Sovereignty-by-design consent protocol that prevents dystopian data trajectories', cat: 'policy', color: '#ec4899' },
+];
 
-  return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>cocapn.ai — The Agent Runtime</title><style>'
-    + '*{margin:0;padding:0;box-sizing:border-box}'
-    + ':root{--bg:#0a0a0f;--sf:#1a1a2e;--bd:#2a2a4a;--tx:#e0e0f0;--mt:#8a93b4;--ac:#00e6d6;--pu:#7c3aed;--bl:#3b82f6;--gn:#1fc858;--gd:#f59e0b}'
-    + 'body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}'
-    + 'a{color:var(--pu);text-decoration:none}a:hover{text-decoration:underline}'
-    + 'nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--bd)}'
-    + 'nav .logo{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu));-webkit-background-clip:text;-webkit-text-fill-color:transparent}'
-    + 'nav .links{display:flex;gap:1.5rem;font-size:.88rem;color:var(--mt)}nav .links a{color:var(--mt)}'
-    + '.hero{padding:4rem 2rem;text-align:center;max-width:800px;margin:0 auto}'
-    + '.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;line-height:1.1}'
-    + '.hero p{color:var(--mt);font-size:1.1rem;line-height:1.7;max-width:600px;margin:0 auto 1.5rem}'
-    + '.pills{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}'
-    + '.pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600}'
-    + '.pill.g{background:#1fc85815;color:var(--gn);border:1px solid #1fc85833}'
-    + '.pill.p{background:#7c3aed15;color:var(--pu);border:1px solid #7c3aed33}'
-    + '.pill.d{background:#f59e0b15;color:var(--gd);border:1px solid #f59e0b33}'
-    + '.cta-row{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}'
-    + '.cta{padding:.8rem 2rem;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;transition:opacity .2s}'
-    + '.cta:hover{opacity:.85}.cta.primary{background:linear-gradient(135deg,var(--pu),var(--bl));color:white}'
-    + '.cta.secondary{background:var(--sf);color:var(--tx);border:1px solid var(--bd)}'
-    + '.section{max-width:1100px;margin:0 auto;padding:3rem 2rem}.section h2{font-size:1.5rem;margin-bottom:1rem}'
-    + '.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem}'
-    + '.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.5rem;transition:border-color .2s}.card:hover{border-color:var(--pu)}'
-    + '.card h3{font-size:1.05rem;margin-bottom:.5rem}.card p{color:var(--mt);font-size:.85rem;line-height:1.6}'
-    + '.card .tag{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:8px;background:var(--pu);color:white;margin-top:.75rem}'
-    + '.fleet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem;margin-top:1rem}'
-    + '.vessel{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:.7rem;text-align:center;font-size:.8rem;transition:all .2s;cursor:pointer}.vessel:hover{border-color:var(--ac);transform:translateY(-2px)}'
-    + '.vessel .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}'
-    + '.vessel .name{font-weight:600;margin-bottom:.2rem;font-size:.82rem}.vessel .desc{color:var(--mt);font-size:.7rem}'
-    + '.chat-wrap{max-width:700px;margin:2rem auto}'
-    + '.messages{max-height:400px;overflow-y:auto;padding:1rem;background:var(--sf);border:1px solid var(--bd);border-radius:14px;border-bottom:none}'
-    + '.msg{padding:.6rem .9rem;border-radius:10px;margin-bottom:.4rem;max-width:88%;font-size:.88rem;line-height:1.5;white-space:pre-wrap}'
-    + '.msg.user{background:#1a1a3e;margin-left:auto;border:1px solid #2a2a5a}.msg.bot{background:#12122a;border:1px solid #1a1a3a}'
-    + '.input-row{display:flex;gap:.5rem;padding:.75rem;background:var(--sf);border:1px solid var(--bd);border-radius:14px}'
-    + '.input-row textarea{flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;color:var(--tx);font-family:inherit;font-size:.88rem;resize:none;outline:none}'
-    + '.input-row textarea:focus{border-color:var(--pu)}'
-    + '.input-row button{background:linear-gradient(135deg,var(--pu),var(--bl));color:white;border:none;border-radius:8px;padding:.6rem 1.2rem;cursor:pointer;font-size:.88rem}.input-row button:disabled{opacity:.4}'
-    + '.credit-bar{text-align:center;padding:.5rem;font-size:.78rem;color:var(--mt)}.credit-bar .n{color:var(--ac);font-weight:700}'
-    + '.typing{color:var(--mt);font-style:italic;padding:.3rem .9rem;font-size:.82rem}'
-    + '.modal{display:none;position:fixed;inset:0;background:#000000cc;z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}'
-    + '.modal-panel{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:2rem;max-width:420px;width:90%}'
-    + '.modal-panel h2{color:var(--ac);margin-bottom:.5rem}.modal-panel label{display:block;margin:.5rem 0;color:var(--mt);font-size:.82rem}'
-    + '.modal-panel input,.modal-panel select{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.5rem;color:var(--tx);font-size:.88rem;margin-top:3px}'
-    + '.modal-panel .row{display:flex;gap:.5rem;margin-top:1rem}'
-    + '.modal-panel .bg{background:var(--bd);color:var(--tx);border:none;border-radius:8px;padding:.5rem 1rem;cursor:pointer;font-size:.88rem}'
-    + '.modal-panel .note{font-size:.7rem;color:#4a4a6a;margin-top:.5rem}'
-    + '.stats{display:flex;gap:2rem;justify-content:center;padding:2rem;flex-wrap:wrap}'
-    + '.stat{text-align:center}.stat .num{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu));-webkit-background-clip:text;-webkit-text-fill-color:transparent}'
-    + '.stat .label{font-size:.75rem;color:var(--mt);margin-top:.2rem}'
-    + 'footer{text-align:center;padding:2rem;color:#4a4a6a;font-size:.75rem;border-top:1px solid var(--bd);margin-top:3rem}'
-    + '@media(max-width:600px){.hero{padding:2rem 1rem}.section{padding:2rem 1rem}.stats{gap:1rem}.grid{grid-template-columns:1fr}.nav .links{display:none}}'
-    + '</style></head><body>'
-    + '<nav><div class="logo">cocapn.ai</div><div class="links"><a href="#playground">Playground</a><a href="#fleet">Fleet</a><a href="#how">How It Works</a><a href="https://github.com/Lucineer" target="_blank">GitHub</a></div></nav>'
-    + '<div class="hero"><h1>The Agent Runtime</h1>'
-    + '<p>Fork a vessel. Give it a key. It bootstraps itself. No signup, no configuration, no vendor lock-in. Every agent is an open-source GitHub repo that evolves with its captain.</p>'
-    + '<div class="pills"><span class="pill g">64 vessels live</span><span class="pill p">Open source</span><span class="pill d">BYOK — your keys, your control</span></div>'
-    + '<div class="cta-row"><a href="#playground" class="cta primary">Try It Free</a><a href="https://github.com/Lucineer" class="cta secondary" target="_blank">Browse the Fleet</a></div>'
-    + '</div>'
-    + '<div class="stats"><div class="stat"><div class="num">64</div><div class="label">Live Vessels</div></div><div class="stat"><div class="num">0</div><div class="label">API Keys Stored</div></div><div class="stat"><div class="num">$0</div><div class="label">Cost to Fork</div></div><div class="stat"><div class="num">6</div><div class="label">BYOK Providers</div></div></div>'
-    + '<div class="section" id="fleet"><h2>&#x1f6a2; The Fleet</h2><p style="color:var(--mt);margin-bottom:1rem">Every vessel is a sovereign Cloudflare Worker. Click to explore.</p>'
-    + '<div class="fleet-grid">' + vesselCards + '</div>'
-    + '<div style="text-align:center;margin-top:1rem"><a href="https://the-fleet.casey-digennaro.workers.dev" target="_blank" style="font-size:.82rem;color:var(--ac)">View full fleet directory &#x2192;</a></div></div>'
+const ARCHETYPES = [
+  { name: 'Coding Agent', desc: 'Writes, tests, and ships code from natural language specs', vessel: 'makerlog-ai' },
+  { name: 'AI Classroom', desc: 'Adaptive tutoring with profile-based teaching styles', vessel: 'studylog-ai' },
+  { name: 'Dungeon Master', desc: 'TTRPG game engine with branching encounters and NPC memory', vessel: 'dmlog-ai' },
+  { name: 'Business Assistant', desc: 'CRM, meeting simulator, and deal pipeline management', vessel: 'businesslog-ai' },
+  { name: 'Research Agent', desc: 'Paper synthesis, literature review, and knowledge extraction', vessel: 'luciddreamer-ai' },
+  { name: 'Creative Studio', desc: 'Ideation pipeline with multi-model brainstorming and grounding', vessel: 'ideation-engine' },
+  { name: 'Fleet Commander', desc: 'Hub-and-spoke dashboard for monitoring and orchestrating vessels', vessel: 'deckboss-ai' },
+  { name: 'Self-Evolver', desc: 'Agent that iterates its own code based on captain feedback', vessel: 'self-evolve-ai' },
+  { name: 'Fitness Coach', desc: 'Workout planning, form checking, and progress tracking', vessel: 'activelog-ai' },
+  { name: 'Cooking Companion', desc: 'Recipe generation, dietary adaptation, and meal planning', vessel: 'cooklog-ai' },
+  { name: 'Fishing Guide', desc: 'Species tracking, technique coaching, and catch logging', vessel: 'fishinglog-ai' },
+  { name: 'Gaming Coach', desc: 'Strategy analysis, build optimization, and skill progression', vessel: 'playerlog-ai' },
+];
+
+function landingHTML() {
+  const vc = VESSELS.map(v => '<a href="' + v.url + '" target="_blank" class="vessel"><div class="dot" style="background:' + v.color + '"></div><div class="name">' + v.name + '</div><div class="desc">' + v.desc + '</div></a>').join('\n      ');
+  const eq = EQUIPMENT.map(e => '<div class="eq"><h4>' + e.name + '</h4><p>' + e.desc + '</p><span class="tag" style="background:' + e.color + '22;color:' + e.color + ';border:1px solid ' + e.color + '44">' + e.cat + '</span></div>').join('\n      ');
+  const ar = ARCHETYPES.map(a => '<div class="card"><h3>' + a.name + '</h3><p>' + a.desc + '</p><span class="tag">' + a.vessel + '</span></div>').join('\n      ');
+
+  const CSS = '*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#0a0a0f;--sf:#1a1a2e;--bd:#2a2a4a;--tx:#e0e0f0;--mt:#8a93b4;--ac:#00e6d6;--pu:#7c3aed;--bl:#3b82f6;--gn:#1fc858;--gd:#f59e0b}body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}a{color:var(--pu);text-decoration:none}a:hover{text-decoration:underline}'
+    + 'nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--bd)}nav .logo{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu));-webkit-background-clip:text;-webkit-text-fill-color:transparent}nav .links{display:flex;gap:1.2rem;font-size:.82rem;color:var(--mt)}nav .links a{color:var(--mt)}'
+    + '.hero{padding:4rem 2rem;text-align:center;max-width:800px;margin:0 auto}.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;line-height:1.1}.hero p{color:var(--mt);font-size:1.1rem;line-height:1.7;max-width:600px;margin:0 auto 1.5rem}'
+    + '.pills{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}.pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600}.pill.g{background:#1fc85815;color:var(--gn);border:1px solid #1fc85833}.pill.p{background:#7c3aed15;color:var(--pu);border:1px solid #7c3aed33}.pill.d{background:#f59e0b15;color:var(--gd);border:1px solid #f59e0b33}'
+    + '.cta-row{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}.cta{padding:.8rem 2rem;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;transition:opacity .2s}.cta:hover{opacity:.85}.cta.primary{background:linear-gradient(135deg,var(--pu),var(--bl));color:white}.cta.secondary{background:var(--sf);color:var(--tx);border:1px solid var(--bd)}'
+    + '.section{max-width:1100px;margin:0 auto;padding:3rem 2rem}.section h2{font-size:1.4rem;margin-bottom:.75rem}.section>.sub{color:var(--mt);margin-bottom:1.5rem;font-size:.9rem}'
+    + '.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.4rem;transition:border-color .2s}.card:hover{border-color:var(--pu)}.card h3{font-size:1rem;margin-bottom:.4rem}.card p{color:var(--mt);font-size:.82rem;line-height:1.6}.card .tag{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:8px;background:var(--pu);color:white;margin-top:.7rem}'
+    + '.fleet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.65rem;margin-top:1rem}.vessel{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:.65rem;text-align:center;font-size:.78rem;transition:all .2s;cursor:pointer}.vessel:hover{border-color:var(--ac);transform:translateY(-2px)}.vessel .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:3px}.vessel .name{font-weight:600;font-size:.8rem}.vessel .desc{color:var(--mt);font-size:.68rem}'
+    + '.eq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.75rem;margin-top:1rem}.eq{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:1rem;transition:border-color .2s}.eq:hover{border-color:var(--pu)}.eq h4{font-size:.88rem;margin-bottom:.3rem}.eq p{color:var(--mt);font-size:.76rem;line-height:1.5}.eq .tag{display:inline-block;font-size:.62rem;padding:2px 6px;border-radius:6px;margin-top:.5rem}'
+    + '.tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:1rem}.tbl th{text-align:left;padding:.6rem .8rem;color:var(--ac);border-bottom:1px solid var(--bd);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}.tbl td{padding:.6rem .8rem;border-bottom:1px solid #1a1a2e}.tbl tr:hover td{background:#0f0f1a}.tbl .price{color:var(--gn);font-weight:600}.tbl .free{color:var(--ac);font-weight:600}'
+    + '.stats{display:flex;gap:2rem;justify-content:center;padding:2rem;flex-wrap:wrap}.stat{text-align:center}.stat .num{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--pu));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.stat .label{font-size:.72rem;color:var(--mt);margin-top:.2rem}'
+    + '.chat-wrap{max-width:700px;margin:2rem auto}.messages{max-height:400px;overflow-y:auto;padding:1rem;background:var(--sf);border:1px solid var(--bd);border-radius:14px;border-bottom:none}.msg{padding:.6rem .9rem;border-radius:10px;margin-bottom:.4rem;max-width:88%;font-size:.85rem;line-height:1.5;white-space:pre-wrap}.msg.user{background:#1a1a3e;margin-left:auto;border:1px solid #2a2a5a}.msg.bot{background:#12122a;border:1px solid #1a1a3a}'
+    + '.input-row{display:flex;gap:.5rem;padding:.75rem;background:var(--sf);border:1px solid var(--bd);border-radius:14px}.input-row textarea{flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;color:var(--tx);font-family:inherit;font-size:.85rem;resize:none;outline:none}.input-row textarea:focus{border-color:var(--pu)}.input-row button{background:linear-gradient(135deg,var(--pu),var(--bl));color:white;border:none;border-radius:8px;padding:.6rem 1.2rem;cursor:pointer;font-size:.85rem}.input-row button:disabled{opacity:.4}'
+    + '.credit-bar{text-align:center;padding:.5rem;font-size:.76rem;color:var(--mt)}.credit-bar .n{color:var(--ac);font-weight:700}.typing{color:var(--mt);font-style:italic;padding:.3rem .9rem;font-size:.8rem}'
+    + '.modal{display:none;position:fixed;inset:0;background:#000000cc;z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}.modal-panel{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:2rem;max-width:420px;width:90%}.modal-panel h2{color:var(--ac);margin-bottom:.5rem}.modal-panel label{display:block;margin:.5rem 0;color:var(--mt);font-size:.8rem}.modal-panel input,.modal-panel select{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.5rem;color:var(--tx);font-size:.85rem;margin-top:3px}.modal-panel .row{display:flex;gap:.5rem;margin-top:1rem}.modal-panel .bg{background:var(--bd);color:var(--tx);border:none;border-radius:8px;padding:.5rem 1rem;cursor:pointer;font-size:.85rem}.modal-panel .note{font-size:.68rem;color:#4a4a6a;margin-top:.5rem}'
+    + 'footer{text-align:center;padding:2rem;color:#4a4a6a;font-size:.72rem;border-top:1px solid var(--bd);margin-top:3rem}'
+    + '@media(max-width:600px){.hero{padding:2rem 1rem}.section{padding:2rem 1rem}.stats{gap:1rem}.grid{grid-template-columns:1fr}nav .links{display:none}.tbl{font-size:.75rem}.tbl th,.tbl td{padding:.4rem .5rem}}';
+
+  return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>cocapn.ai — The Agent Runtime</title><style>' + CSS + '</style></head><body>'
+    + '<nav><div class="logo">cocapn.ai</div><div class="links"><a href="#playground">Playground</a><a href="#fleet">Fleet</a><a href="#equipment">Equipment</a><a href="#archetypes">Archetypes</a><a href="#pricing">Pricing</a><a href="#how">How It Works</a><a href="https://github.com/Lucineer" target="_blank">GitHub</a></div></nav>'
+    + '<div class="hero"><h1>The Agent Runtime</h1><p>Fork a vessel. Give it a key. It bootstraps itself. No signup, no configuration, no vendor lock-in. Every agent is an open-source GitHub repo that evolves with its captain.</p>'
+    + '<div class="pills"><span class="pill g">64 vessels live</span><span class="pill p">Open source</span><span class="pill d">BYOK</span></div>'
+    + '<div class="cta-row"><a href="#playground" class="cta primary">Try It Free</a><a href="https://github.com/Lucineer" class="cta secondary" target="_blank">Browse the Fleet</a></div></div>'
+    + '<div class="stats"><div class="stat"><div class="num">64</div><div class="label">Live Vessels</div></div><div class="stat"><div class="num">0</div><div class="label">API Keys Stored</div></div><div class="stat"><div class="num">$0</div><div class="label">Cost to Fork</div></div><div class="stat"><div class="num">6</div><div class="label">BYOK Providers</div></div><div class="stat"><div class="num">12</div><div class="label">Equipment Modules</div></div></div>'
+    // Fleet
+    + '<div class="section" id="fleet"><h2>&#x1f6a2; The Fleet</h2><p class="sub">Every vessel is a sovereign Cloudflare Worker. Click to explore.</p><div class="fleet-grid">' + vc + '</div><div style="text-align:center;margin-top:1rem"><a href="https://the-fleet.casey-digennaro.workers.dev" target="_blank" style="font-size:.8rem;color:var(--ac)">View full fleet directory &#x2192;</a></div></div>'
+    // Equipment
+    + '<div class="section" id="equipment"><h2>&#x1f393; Equipment Catalog</h2><p class="sub">Equipment changes what an agent perceives. Inject, do not install.</p><div class="eq-grid">' + eq + '</div></div>'
+    // Archetypes
+    + '<div class="section" id="archetypes"><h2>&#x1f3af; Domain Archetypes</h2><p class="sub">Every vessel starts as a tabula rasa seed, then specializes through its captain\'s intent.</p><div class="grid">' + ar + '</div></div>'
+    // Pricing
+    + '<div class="section" id="pricing"><h2>&#x1f4b0; Pricing</h2><p class="sub">Pay for convenience, not intelligence. Fork for free.</p><table class="tbl"><thead><tr><th>Tier</th><th>Price</th><th>Requests/day</th><th>Cost Plus</th><th>Features</th></tr></thead><tbody>'
+    + '<tr><td><strong>Free</strong></td><td class="free">$0</td><td>50</td><td>20%</td><td>Ads, rate-limited, 5 playground credits</td></tr>'
+    + '<tr><td><strong>Standard</strong></td><td class="price">$5/mo</td><td>5K</td><td>2%</td><td>No ads, BYOK, session export</td></tr>'
+    + '<tr><td><strong>Gold</strong></td><td class="price">$15/mo</td><td>Unlimited</td><td>At cost</td><td>Docker containers, equipment marketplace</td></tr>'
+    + '<tr><td><strong>Enterprise</strong></td><td class="price">$50/seat</td><td>Unlimited</td><td>At cost</td><td>SLA, custom domains, white-label billing</td></tr>'
+    + '</tbody></table><p style="color:var(--mt);margin-top:1rem;font-size:.78rem">Auto-seat cap at $12/mo. 80% ad revenue returned as credits. The fleet takes 0% from equipment builders.</p></div>'
+    // How It Works
     + '<div class="section" id="how"><h2>&#x26a1; How It Works</h2><div class="grid">'
     + '<div class="card"><h3>Fork on GitHub</h3><p>Every vessel is a GitHub repo. Fork it and it is yours: your code, your data, your rules. No permissions, no API, no waiting.</p><span class="tag">Zero lock-in</span></div>'
     + '<div class="card"><h3>Your Keys, Your Control</h3><p>BYOK means your API keys live in your browser. They never touch our servers. The agent calls providers directly.</p><span class="tag">Privacy by design</span></div>'
@@ -145,20 +152,24 @@ function landingHTML() {
     + '<div class="card"><h3>Emergent Intelligence</h3><p>Connected vessels develop capabilities none were designed for. The emergence bus lets agents share events and learn patterns together.</p><span class="tag">13 emergence repos</span></div>'
     + '<div class="card"><h3>Fork-First Economy</h3><p>500K builders earn rent from equipment micro-fees. The fleet takes 0%. Open source generates more revenue than proprietary.</p><span class="tag">$3.7B projected</span></div>'
     + '</div></div>'
-    + '<div class="section" id="playground"><h2>&#x1f3ae; Playground</h2><p style="color:var(--mt);margin-bottom:1rem">Chat with a fleet vessel. 5 free messages, no account needed.</p>'
+    // Playground
+    + '<div class="section" id="playground"><h2>&#x1f3ae; Playground</h2><p class="sub">Chat with a fleet vessel. 5 free messages, no account needed.</p>'
     + '<div class="credit-bar">Credits: <span class="n" id="credits">?</span> remaining</div>'
     + '<div class="chat-wrap"><div class="messages" id="messages"><div class="msg bot">Welcome to cocapn.ai. I am a fleet vessel. Ask me about the fleet, git-agents, equipment, or tell me to build something.</div></div>'
     + '<div class="input-row"><textarea id="input" placeholder="Type a message..." rows="1"></textarea>'
     + '<button id="send" onclick="send()">Send</button>'
-    + '<button onclick="toggleSettings()" style="background:var(--bd);color:var(--tx);border:none;border-radius:8px;padding:.6rem 1rem;cursor:pointer;font-size:.82rem">Keys</button></div></div></div>'
+    + '<button onclick="toggleSettings()" style="background:var(--bd);color:var(--tx);border:none;border-radius:8px;padding:.6rem 1rem;cursor:pointer;font-size:.8rem">Keys</button></div></div></div>'
+    // BYOK Modal
     + '<div class="modal" id="settings"><div class="modal-panel"><h2>Bring Your Own Key</h2><p class="note">Your key stays in your browser. Never sent to our servers.</p>'
     + '<label>Provider</label><select id="provider"><option value="deepseek">DeepSeek</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="siliconflow">SiliconFlow</option><option value="deepinfra">DeepInfra</option><option value="moonshot">Moonshot</option></select>'
     + '<label>API Key</label><input type="password" id="apikey" placeholder="sk-..."><label>Model (optional)</label><input id="model" placeholder="Leave blank for default">'
     + '<div class="row"><button class="cta primary" style="padding:.5rem 1.5rem" onclick="saveKey()">Save</button><button class="bg" onclick="clearKey()">Clear</button><button class="bg" onclick="toggleSettings()">Close</button></div></div></div>'
+    // Footer
     + '<footer>cocapn.ai &mdash; The Agent Runtime &middot; <a href="https://github.com/Lucineer" target="_blank">GitHub</a> &middot; <a href="https://the-fleet.casey-digennaro.workers.dev" target="_blank">The Fleet</a> &middot; BYOK &middot; Fork-First &middot; Open Source</footer>'
+    // JS
     + '<script>'
     + 'var messages=[],credits=5,byok=JSON.parse(localStorage.getItem("cocapn_byok")||"null"),fp="";'
-    + 'var SYS="You are a Cocapn fleet vessel running on open-source infrastructure. Help users understand git-agents, vessels, equipment, BYOK, forking, and the Captain-Admiral paradigm. Be concise and opinionated. Reference specific vessels and concepts.";'
+    + 'var SYS="You are a Cocapn fleet vessel running on open-source infrastructure. Help users understand git-agents, vessels, equipment, BYOK, forking, the Captain-Admiral paradigm, and the fleet. Be concise and opinionated. Reference specific vessels and concepts from the cocapn.ai ecosystem. If asked about competitors, explain why fork-first open-source fleets are fundamentally different.";'
     + 'async function init(){try{var r=await fetch("/api/credits");if(r.ok){var d=await r.json();credits=d.remaining;fp=d.fp}}catch(e){}updateCredits();if(byok){document.getElementById("provider").value=byok.provider||"deepseek";document.getElementById("apikey").value=byok.key||"";document.getElementById("model").value=byok.model||""}}'
     + 'function updateCredits(){document.getElementById("credits").textContent=byok?"unlimited":credits}'
     + 'function toggleSettings(){document.getElementById("settings").classList.toggle("open")}'
@@ -174,14 +185,17 @@ function landingHTML() {
 export default {
   async fetch(request: Request, env: Env) {
     const url = new URL(request.url);
+
     if (url.pathname === '/health') return j({ status: 'ok', vessel: 'cocapn-ai', ts: Date.now() });
     if (url.pathname === '/vessel.json') return j({
       id: 'cocapn-ai', name: 'Cocapn', desc: 'The agent runtime and fleet platform', domain: 'cocapn-ai.casey-digennaro.workers.dev',
       type: 'hub', color: '#7c3aed', icon: '\u{1f6a2}', repo: 'https://github.com/Lucineer/cocapn-ai',
-      capabilities: ['chat', 'fleet-discovery', 'byok', 'credits'], version: '2.0'
+      capabilities: ['chat', 'fleet-discovery', 'byok', 'credits', 'equipment-catalog', 'archetypes', 'pricing'], version: '3.0'
     });
     if (url.pathname === '/api/credits') return j({ remaining: await getCredits(fp(request), env), fp: fp(request) });
     if (url.pathname === '/api/discover') return j({ vessels: VESSELS, total: VESSELS.length });
+    if (url.pathname === '/api/equipment') return j({ equipment: EQUIPMENT, total: EQUIPMENT.length });
+    if (url.pathname === '/api/archetypes') return j({ archetypes: ARCHETYPES, total: ARCHETYPES.length });
 
     if (url.pathname === '/api/play' && request.method === 'POST') {
       const { messages, fp: cfp } = await request.json() as any;
