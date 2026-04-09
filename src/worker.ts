@@ -3,6 +3,11 @@ const HTML = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta property="og:title" content="Cocapn.ai — The Agent Runtime">
+    <meta property="og:description" content="Cocapn.ai — The Agent Runtime. A2A, A2UI, A2C, MCP. Git-native, BYOK, zero lock-in.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/Lucineer/cocapn-ai">
+    <meta property="og:site_name" content="Lucineer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cocapn.ai - The Agent Runtime</title>
